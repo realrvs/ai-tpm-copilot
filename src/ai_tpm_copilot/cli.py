@@ -108,6 +108,42 @@ def validate(
         raise typer.Exit(code=1)
 
 
+@app.command()
+def schedule(
+    interval: int = typer.Option(
+        None, "--interval", "-i", help="Run every N seconds (e.g. 3600 for hourly)"
+    ),
+    cron: str = typer.Option(
+        None, "--cron", "-cr", help="Cron expression (e.g. '0 9 * * 1' for Mon 9:00)"
+    ),
+    days: int = typer.Option(
+        7, "--days", "-d", help="Number of days of history to analyze"
+    ),
+    deliver: str = typer.Option(
+        "file",
+        "--deliver",
+        "-D",
+        help="Delivery method: file, telegram, or both",
+    ),
+) -> None:
+    """Run the pipeline on a schedule (cron/interval)."""
+    try:
+        settings = Settings.load()
+    except Exception as exc:
+        logger.error("Failed to load settings: %s", exc)
+        raise typer.Exit(code=1)
+
+    from ai_tpm_copilot.pipeline.scheduler import schedule as run_scheduler
+
+    run_scheduler(
+        settings=settings,
+        interval=interval,
+        cron_expression=cron,
+        days=days,
+        deliver=deliver,
+    )
+
+
 def main() -> None:
     """Entry point."""
     app()
