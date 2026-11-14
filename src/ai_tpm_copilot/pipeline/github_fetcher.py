@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import GitHubIssue, IssueComment
+
+if TYPE_CHECKING:
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +86,7 @@ class GitHubFetcher:
             List of GitHubIssue objects with comments populated.
         """
         since_days = since_days or self._since_days
-        since_dt = datetime.now(timezone.utc) - timedelta(days=since_days)
+        since_dt = datetime.now(UTC) - timedelta(days=since_days)
         issues: list[GitHubIssue] = []
 
         for repo in self._repos:

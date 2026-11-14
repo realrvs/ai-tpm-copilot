@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import logging
+from typing import TYPE_CHECKING
 
-from ai_tpm_copilot.config.settings import Settings
-from ai_tpm_copilot.models.domain import GitHubIssue, RedactionResult
+if TYPE_CHECKING:
+    from ai_tpm_copilot.config.settings import Settings
+    from ai_tpm_copilot.models.domain import GitHubIssue, RedactionResult
 
 logger = logging.getLogger(__name__)
 

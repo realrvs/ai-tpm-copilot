@@ -1,0 +1,1 @@
+{"query":"{ viewer { projectsV2(first: 10) { nodes { id title url fields(first: 20) { nodes { ... on ProjectV2Field { id name dataType } ... on ProjectV2SingleSelectField { id name dataType options { id name } } } } } } } }"}

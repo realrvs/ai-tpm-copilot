@@ -9,12 +9,13 @@ Tests:
 
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import httpx
 import pytest
 import respx
-import httpx
 
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.scheduler import _run_pipeline
@@ -86,7 +87,7 @@ def test_tc_sched_001_success_metrics():
 
 def test_tc_sched_002_error_metrics():
     """TC-SCHED-002: _run_pipeline returns error metrics on failure."""
-    settings = _make_settings()
+    _make_settings()
 
     # Provide invalid settings that will cause pipeline to fail
     settings_with_bad_token = Settings(
@@ -167,11 +168,8 @@ def test_sched_with_only_interval():
         # Mock start() to raise KeyboardInterrupt immediately
         mock_instance.start.side_effect = KeyboardInterrupt()
 
-        with patch("signal.signal"):
-            try:
-                schedule(settings, interval=3600)
-            except KeyboardInterrupt:
-                pass
+        with patch("signal.signal"), contextlib.suppress(KeyboardInterrupt):
+            schedule(settings, interval=3600)
 
         # Verify scheduler was started
         mock_instance.start.assert_called_once()
@@ -192,11 +190,8 @@ def test_sched_with_only_cron():
         # Mock start() to raise KeyboardInterrupt immediately
         mock_instance.start.side_effect = KeyboardInterrupt()
 
-        with patch("signal.signal"):
-            try:
-                schedule(settings, cron_expression="0 9 * * 1")
-            except KeyboardInterrupt:
-                pass
+        with patch("signal.signal"), contextlib.suppress(KeyboardInterrupt):
+            schedule(settings, cron_expression="0 9 * * 1")
 
         # Verify scheduler was started
         mock_instance.start.assert_called_once()

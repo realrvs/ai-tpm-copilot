@@ -12,11 +12,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.observability import (
-    OTelInstrumentation,
     SPAN_GITHUB_FETCH,
     SPAN_LLM_GENERATE,
     SPAN_PII_REDACT,
@@ -24,6 +21,7 @@ from ai_tpm_copilot.pipeline.observability import (
     SPAN_REPORT_DELIVER,
     SPAN_REPORT_GENERATE,
     SPAN_REPORT_VALIDATE,
+    OTelInstrumentation,
 )
 
 

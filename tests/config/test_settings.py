@@ -14,7 +14,6 @@ import pytest
 
 from ai_tpm_copilot.config.settings import Settings
 
-
 # ─── TC-CONFIG-001: Default settings ──────────────────────────────
 
 
@@ -145,7 +144,6 @@ def test_tc_config_005_secret_not_exposed():
 
 def test_settings_load_classmethod():
     """Settings.load() returns a Settings instance."""
-    settings = Settings.load.__func__  # classmethod bound to class
     # We can't easily test ENV loading without patching, but verify the method exists
     assert callable(Settings.load)
 

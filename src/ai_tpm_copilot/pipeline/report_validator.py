@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
-from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import LLMReport, ReportItem
+
+if TYPE_CHECKING:
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 

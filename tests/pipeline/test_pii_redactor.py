@@ -7,11 +7,8 @@ Tests:
 
 from __future__ import annotations
 
-import pytest
-
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.pii_redactor import PIIRedactor
-
 
 # ─── Fixtures ─────────────────────────────────────────────────────
 

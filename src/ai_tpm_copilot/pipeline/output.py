@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
-from ai_tpm_copilot.config.settings import Settings
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +30,7 @@ class FileWriter:
             Path to the written file.
         """
         self._output_dir.mkdir(parents=True, exist_ok=True)
-        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        date_str = datetime.now(UTC).strftime("%Y-%m-%d")
         filepath = self._output_dir / f"status_{date_str}.md"
         filepath.write_text(report, encoding="utf-8")
         logger.info("Report written to %s (%d chars)", filepath, len(report))
@@ -58,7 +61,6 @@ class TelegramSender:
             return False
 
         try:
-            import aiogram
             from aiogram import Bot
 
             bot = Bot(token=self._bot_token)

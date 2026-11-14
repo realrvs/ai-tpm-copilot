@@ -9,8 +9,6 @@ Tests:
 
 from __future__ import annotations
 
-import pytest
-
 from ai_tpm_copilot.models.domain import LLMReport, ReportItem
 from ai_tpm_copilot.pipeline.report_generator import ReportGenerator
 

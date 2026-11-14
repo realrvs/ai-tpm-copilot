@@ -7,7 +7,7 @@ Tests:
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
@@ -16,7 +16,6 @@ import respx
 
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.github_fetcher import AuthError, GitHubFetcher
-
 
 # ─── Fixtures ─────────────────────────────────────────────────────
 
@@ -58,7 +57,7 @@ def _mock_issue(number: int, title: str | None = None, state: str = "closed",
     """Create a minimal GitHub API issue dict."""
     if title is None:
         title = f"Issue #{number}"
-    created = datetime.now(timezone.utc) - timedelta(days=created_offset_days)
+    created = datetime.now(UTC) - timedelta(days=created_offset_days)
     updated = created + timedelta(hours=1)
     return {
         "id": 1000 + number,
@@ -78,7 +77,7 @@ def _mock_comment(issue_number: int, body: str = "Nice work!") -> dict[str, Any]
     return {
         "id": 5000 + issue_number,
         "body": body,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "user": {"login": "commenter"},
     }
 

@@ -14,14 +14,17 @@ from __future__ import annotations
 
 import logging
 from contextlib import contextmanager
-from typing import Generator
+from typing import TYPE_CHECKING
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 
-from ai_tpm_copilot.config.settings import Settings
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 

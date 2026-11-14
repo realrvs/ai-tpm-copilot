@@ -11,14 +11,12 @@ Tests:
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from typing import Any
+from datetime import UTC, datetime, timedelta
 
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import GitHubIssue, LLMReport, ReportItem
 from ai_tpm_copilot.pipeline.prompt_builder import PromptBuilder
 from ai_tpm_copilot.pipeline.report_validator import ReportValidator
-
 
 # ─── Fixtures ─────────────────────────────────────────────────────
 
@@ -61,7 +59,7 @@ def _make_settings(**overrides: dict) -> Settings:
 
 def _make_issue(number: int, body: str = "", state: str = "closed") -> GitHubIssue:
     """Create a GitHubIssue for testing."""
-    created = datetime.now(timezone.utc) - timedelta(days=2)
+    created = datetime.now(UTC) - timedelta(days=2)
     return GitHubIssue(
         id=1000 + number,
         number=number,

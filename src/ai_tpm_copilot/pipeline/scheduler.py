@@ -11,18 +11,20 @@ import logging
 import signal
 import sys
 import time
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Callable
+from typing import TYPE_CHECKING
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
-from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.observability import OTelInstrumentation
 from ai_tpm_copilot.pipeline.orchestrator import Pipeline
 from ai_tpm_copilot.pipeline.output import FileWriter, TelegramSender
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger("ai_tpm_copilot.scheduler")
 

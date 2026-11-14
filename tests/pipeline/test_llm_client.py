@@ -10,8 +10,6 @@ Tests:
 
 from __future__ import annotations
 
-import pytest
-
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.llm_client import YandexGPTClient
 

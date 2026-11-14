@@ -10,19 +10,17 @@ Tests:
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
 
 import httpx
-import pytest
 import respx
 
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.orchestrator import Pipeline
 from ai_tpm_copilot.pipeline.output import FileWriter, TelegramSender
-
 
 # ─── Fixtures ─────────────────────────────────────────────────────
 
@@ -69,7 +67,7 @@ def _mock_issues(count: int, states: list[str] | None = None) -> list[dict[str, 
         states = ["closed"] * count
     issues = []
     for i in range(count):
-        created = datetime.now(timezone.utc) - timedelta(days=i % 5 + 1)
+        created = datetime.now(UTC) - timedelta(days=i % 5 + 1)
         issues.append({
             "id": 1000 + i,
             "number": 10 + i,
@@ -164,8 +162,8 @@ def test_tc004_blocked_issue_detection():
         "state": "open",
         "assignees": [{"login": "dev1"}],
         "labels": [{"name": "blocked"}],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
+        "updated_at": datetime.now(UTC).isoformat(),
     }]
 
     respx.get(
@@ -339,9 +337,9 @@ def test_tc007_pipeline_components():
 
     # Verify component types
     from ai_tpm_copilot.pipeline.github_fetcher import GitHubFetcher
+    from ai_tpm_copilot.pipeline.llm_client import YandexGPTClient
     from ai_tpm_copilot.pipeline.pii_redactor import PIIRedactor
     from ai_tpm_copilot.pipeline.prompt_builder import PromptBuilder
-    from ai_tpm_copilot.pipeline.llm_client import YandexGPTClient
     from ai_tpm_copilot.pipeline.report_generator import ReportGenerator
 
     assert isinstance(pipeline._fetcher, GitHubFetcher)

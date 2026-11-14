@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, Index, Integer, String, Text
 from sqlalchemy.orm import DeclarativeBase
@@ -30,7 +30,7 @@ class Report(Base):
 
     report_id = Column(String(36), primary_key=True, index=True)
     repo = Column(String(255), nullable=False, index=True)
-    generated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    generated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
     token_usage = Column(Integer, nullable=False, default=0)
     pii_redacted_count = Column(Integer, nullable=False, default=0)
     markdown = Column(Text, nullable=True)

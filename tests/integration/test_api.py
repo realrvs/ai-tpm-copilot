@@ -10,7 +10,7 @@ Tests:
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -18,8 +18,7 @@ import httpx
 import pytest
 import respx
 
-from ai_tpm_copilot.api import app, _reports
-
+from ai_tpm_copilot.api import _reports, app
 
 # ─── Test client fixture ──────────────────────────────────────────
 
@@ -69,8 +68,8 @@ def test_tc_api_001_post_report(client):
         "state": "closed",
         "assignees": [],
         "labels": [],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
+        "updated_at": datetime.now(UTC).isoformat(),
     }]
     respx.get(
         url__startswith="https://api.github.com/repos/test/test/issues"
@@ -145,8 +144,8 @@ def test_tc_api_002_get_report(client):
         "state": "closed",
         "assignees": [],
         "labels": [],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
+        "updated_at": datetime.now(UTC).isoformat(),
     }]
     respx.get(
         url__startswith="https://api.github.com/repos/test/test/issues"
@@ -229,8 +228,8 @@ def test_tc_api_005_custom_days(client):
         "state": "closed",
         "assignees": [],
         "labels": [],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
+        "updated_at": datetime.now(UTC).isoformat(),
     }]
     respx.get(
         url__startswith="https://api.github.com/repos/test/test/issues"

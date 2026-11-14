@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import logging
 import time
+from typing import TYPE_CHECKING
 
-from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import PipelineMetrics
 from ai_tpm_copilot.pipeline.github_fetcher import GitHubFetcher
 from ai_tpm_copilot.pipeline.llm_client import YandexGPTClient
@@ -14,6 +14,9 @@ from ai_tpm_copilot.pipeline.pii_redactor import PIIRedactor
 from ai_tpm_copilot.pipeline.prompt_builder import PromptBuilder
 from ai_tpm_copilot.pipeline.report_generator import ReportGenerator
 from ai_tpm_copilot.pipeline.report_validator import ReportValidator
+
+if TYPE_CHECKING:
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 

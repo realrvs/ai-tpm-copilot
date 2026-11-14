@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import typer
 
@@ -12,6 +13,9 @@ from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.pipeline.observability import OTelInstrumentation
 from ai_tpm_copilot.pipeline.orchestrator import Pipeline
 from ai_tpm_copilot.pipeline.output import FileWriter, TelegramSender
+
+if TYPE_CHECKING:
+    pass
 
 app = typer.Typer(
     name="ai-tpm",

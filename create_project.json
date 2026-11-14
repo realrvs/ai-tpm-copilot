@@ -1,0 +1,1 @@
+{"query":"mutation { createProjectV2(input: {title: \"AI TPM Copilot\", organizationId: \"O_kgDOCmv13w\"}) { projectV2 { id title number } } }"}

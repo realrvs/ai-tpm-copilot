@@ -11,11 +11,10 @@ from __future__ import annotations
 import logging
 import time
 import uuid
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from ai_tpm_copilot.config.settings import Settings
@@ -121,7 +120,7 @@ async def health_check() -> HealthResponse:
         status="healthy",
         version="0.1.0a0",
         uptime_seconds=round(uptime, 2),
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
     )
 
 
@@ -155,7 +154,7 @@ async def generate_report(request: ReportRequest) -> ReportResponse:
         "status": "pending",
         "markdown": None,
         "error": None,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "repo": request.repos[0] if request.repos else None,
         "issues_count": 0,
     }
@@ -169,7 +168,7 @@ async def generate_report(request: ReportRequest) -> ReportResponse:
             class OverrideSettings(BaseModel):
                 github: dict[str, Any]
 
-            override = OverrideSettings(github={"repos": request.repos})
+            OverrideSettings(github={"repos": request.repos})
             settings = Settings(
                 github={"token": _app_settings.github.token.get_secret_value(), "repos": request.repos},
                 yandexgpt={"folder_id": _app_settings.yandexgpt.folder_id, "iam_token": _app_settings.yandexgpt.iam_token.get_secret_value()},

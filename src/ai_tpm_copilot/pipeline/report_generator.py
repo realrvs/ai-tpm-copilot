@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
-from ai_tpm_copilot.models.domain import LLMReport
+if TYPE_CHECKING:
+    from ai_tpm_copilot.models.domain import LLMReport
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ class ReportGenerator:
             Markdown-formatted report string.
         """
         lines: list[str] = []
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         lines.append(f"# Статус проекта ({since_days} дней)")
         lines.append(f"**Дата формирования:** {now.strftime('%Y-%m-%d %H:%M UTC')}")

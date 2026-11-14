@@ -9,9 +9,7 @@ Tests:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
-import pytest
+from datetime import UTC, datetime
 
 from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import GitHubIssue, IssueComment, RedactionResult
@@ -38,8 +36,8 @@ def _make_issue(number: int, title: str, body: str = "", state: str = "open") ->
         body=body,
         state=state,
         comments=[],
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
 
 
@@ -198,8 +196,8 @@ def test_prompt_with_comments():
             IssueComment(id=1, body="First comment", author="user1"),
             IssueComment(id=2, body="Second comment", author="user2"),
         ],
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
 
     results = [_make_redaction("Main body\nFirst comment\nSecond comment")]

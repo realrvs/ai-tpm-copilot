@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import LLMReport, ReportItem
+
+if TYPE_CHECKING:
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 

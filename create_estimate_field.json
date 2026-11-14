@@ -1,0 +1,1 @@
+{"query":"mutation { createProjectV2Field(input: {projectId: \"PVT_kwHOCmv1384BrjwW\", name: \"Estimate\", dataType: NUMBER}) { projectV2Field { ... on ProjectV2Field { id name dataType } } } }"}

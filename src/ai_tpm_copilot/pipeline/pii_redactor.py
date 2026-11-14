@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from ai_tpm_copilot.config.settings import Settings
 from ai_tpm_copilot.models.domain import RedactionResult
+
+if TYPE_CHECKING:
+    from ai_tpm_copilot.config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +22,7 @@ _presidio_pattern_registry: Any = None
 def _load_presidio() -> tuple[Any, Any] | tuple[None, None]:
     """Lazy-load Presidio components."""
     try:
-        from presidio_analyzer import AnalyzerEngine, PatternRecognizer, Pattern
+        from presidio_analyzer import AnalyzerEngine, Pattern, PatternRecognizer
 
         return AnalyzerEngine(), PatternRecognizer
     except ImportError:

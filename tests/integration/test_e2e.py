@@ -10,16 +10,13 @@ These tests verify the complete system works end-to-end:
 
 from __future__ import annotations
 
-import subprocess
-import sys
 from pathlib import Path
 
+import httpx
 import pytest
 import respx
-import httpx
 
-from ai_tpm_copilot.api import app, _reports
-
+from ai_tpm_copilot.api import _reports, app
 
 # ─── Fixtures ─────────────────────────────────────────────────────
 
@@ -223,8 +220,9 @@ def test_tc_e2e_003_report_retrieval(client):
 def test_tc_e2e_004_cli_validate():
     """TC-E2E-004: CLI validate command exits with 0 on valid config."""
     # This test verifies the CLI module can be imported and the Typer app works
-    from ai_tpm_copilot.cli import app as cli_app
     from typer.testing import CliRunner
+
+    from ai_tpm_copilot.cli import app as cli_app
 
     runner = CliRunner()
 
