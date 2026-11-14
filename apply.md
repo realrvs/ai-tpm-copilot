@@ -14,16 +14,15 @@
 |---|---|---|---|---|
 | `ENABLE_TELEGRAM_DELIVERY` | `false` | 30 дней | FR-004 | TM-04 |
 | `ENABLE_FACT_CHECK_STRICT` | `true` | бессрочно | NFR-SEC-004 | TM-03, TM-09 |
-| `ENABLE_LLM_PROVIDER_YANDEXGPT` | `false` | 60 дней | FR-003 | — |
 | `ENABLE_FUZZY_MATCHING` | `true` | бессрочно | NFR-SEC-004 | TM-03 |
 | `ENABLE_PII_REDACTION_PRESIDIO` | `true` | бессрочно | NFR-SEC-001 | TM-02 |
 
 > **Обоснование флагов:**
 > - `ENABLE_TELEGRAM_DELIVERY` — включается после тестирования TC-005.
 > - `ENABLE_FACT_CHECK_STRICT` — по умолчанию `true`, риск галлюцинаций критичен.
-> - `ENABLE_LLM_PROVIDER_YANDEXGPT` — опциональный провайдер (Phase 4).
 > - `ENABLE_FUZZY_MATCHING` — смягчает false negatives в fact-check.
 > - `ENABLE_PII_REDACTION_PRESIDIO` — fallback на regex-only, если presidio не установлен.
+> - `ENABLE_LLM_PROVIDER_YANDEXGPT` — **удалён**: YandexGPT является единственным и обязательным провайдером (ADR-решение).
 
 ## Canary Deployment
 
@@ -36,7 +35,7 @@
 
 ## Rollback Plan
 
-1. **Откат feature flags:** `ENABLE_TELEGRAM_DELIVERY=false`, `ENABLE_LLM_PROVIDER_YANDEXGPT=false` через GitHub Secrets / ENV.
+1. **Откат feature flags:** `ENABLE_TELEGRAM_DELIVERY=false` через GitHub Secrets / ENV.
 2. **Откат миграций:** `alembic downgrade -1`.
 3. **Откат кода:** `git revert <commit>` или переключение на tag `v0.1.0`.
 4. **Откат OTel-конфигурации:** Убрать OTLP exporter из `config.yaml`.

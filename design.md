@@ -1,7 +1,7 @@
 ## Context
 Проект `ai-tpm-copilot` представляет собой сервис автоматизации отчетности для TPM, который агрегирует данные из GitHub, очищает их от PII, анализирует через LLM и доставляет результат стейкхолдерам.
 
-Ключевые ограничения: Python 3.11+, соответствие 152-ФЗ (запрет на передачу PII в LLM без очистки), необходимость сквозной наблюдаемости (OpenTelemetry) и работа с российскими LLM-провайдерами (GigaChat/YandexGPT) в условиях импортозамещения.
+Ключевые ограничения: Python 3.11+, соответствие 152-ФЗ (запрет на передачу PII в LLM без очистки), необходимость сквозной наблюдаемости (OpenTelemetry) и работа с YandexGPT (Yandex Cloud).
 
 ## Goals / Non-Goals
 
@@ -32,7 +32,7 @@ flowchart LR
         GH[GitHub Fetcher]
         PII[PII Redactor]
         Prompt[Prompt Builder]
-        LLM[LLM Client]
+        LLM[YandexGPT Client]
         Report[Report Generator]
     end
     subgraph Output["Output Layer"]
@@ -59,10 +59,10 @@ flowchart LR
 ```
 
 **Слои:**
-1. **Input Layer:** CLI-интерфейс (typer) и конфигурация (pydantic-settings из `.env` + `config.yaml`).
-2. **Core Pipeline:** `GitHubFetcher`, `PIIRedactor`, `PromptBuilder`, `LLMClient`, `ReportGenerator`.
+1. **Input Layer:** CLI-интерфейс (typer) и конфигурация (pydantic-settings из `.env`).
+2. **Core Pipeline:** `GitHubFetcher`, `PIIRedactor`, `PromptBuilder`, `YandexGPTClient`, `ReportGenerator`.
 3. **Output Layer:** `TelegramSender` и `FileWriter` (fallback).
-4. **Observability:** OTel SDK → OTel Collector → Jaeger + Prometheus.
+4. **Observability:** OTel SDK → ConsoleSpanExporter (dev) → OTLP exporter (prod).
 
 ### Потоки данных
 
@@ -71,7 +71,7 @@ sequenceDiagram
     participant User as TPM (CLI/Cron)
     participant GH as GitHub API
     participant PII as PII Redactor
-    participant LLM as LLM Provider
+    participant LLM as YandexGPT
     participant TG as Telegram
     participant OTel as OTel Collector
     User->>OTel: start span: pipeline.run
@@ -92,19 +92,20 @@ sequenceDiagram
 
 **Ключевые решения:**
 - PII-очистка происходит **до** формирования промпта — LLM никогда не видит сырые данные.
-- Retry на уровне `GitHubFetcher` и `LLMClient` (tenacity).
+- Retry на уровне `GitHubFetcher` и `YandexGPTClient` (tenacity).
 - Fallback: если Telegram недоступен → запись в файл.
+- LLM-провайдер: **YandexGPT** (Yandex Cloud Generative LLM API).
 
 ### Технологический стек
 
 | Слой | Технология | Обоснование |
 |---|---|---|
-| Язык | Python 3.11+ | Совместимость с ai-tax-assistant |
+| Язык | Python 3.11+ | Совместимость, async support |
 | CLI | Typer | Простота, типизация |
 | Конфиг | pydantic-settings + python-dotenv | Валидация ENV, безопасность |
 | GitHub API | httpx + PyGithub | Async, retry через tenacity |
 | PII Redaction | presidio-analyzer + кастомные regex | Покрытие 152-ФЗ |
-| LLM Client | GigaChat SDK / YandexGPT API | Импортозамещение |
+| LLM Client | **YandexGPT** (Yandex Cloud) | Импортозамещение, ADR-решение |
 | Telegram | aiogram 3.x | Async, надежность |
 | Observability | opentelemetry-sdk + OTLP exporter | Совместимость со стеком |
 | Тесты | pytest + pytest-asyncio + respx | Стандарт |
@@ -117,16 +118,13 @@ sequenceDiagram
 - **Риск**: Prompt Injection. → **Митигация**: XML-изоляция (ADR-002).
 - **Риск**: Превышение лимита токенов. → **Митигация**: truncation + tiktoken.
 - **Trade-off**: Отказ от UI в пользу CLI+Telegram.
-- **Trade-off**: Один LLM-провайдер на конфиг (fallback позже).
+- **Trade-off**: Один LLM-провайдер (YandexGPT) на MVP.
 
 ## Migration Plan
-1. **Фаза 1 (MVP):** CLI + GitHub Fetcher + PII Redactor + GigaChat + File Writer.
-2. **Фаза 2:** Telegram + OpenTelemetry.
-3. **Фаза 3:** Cron + Grafana.
-4. **Фаза 4:** YandexGPT как альтернатива.
+1. **Фаза 1 (MVP):** CLI + GitHub Fetcher + PII Redactor + YandexGPT + File Writer. ✅ Начато
+2. **Фаза 2:** Telegram + OpenTelemetry + Report Validator
+3. **Фаза 3:** Cron + Grafana
+4. **Фаза 4:** API-обёртка (FastAPI) + YandexGPT как fallback
 
 ## Open Questions
-- [ ] Какой LLM-провайдер по умолчанию: GigaChat или YandexGPT?
-- [ ] Поддержка нескольких репозиториев в одном запуске?
-- [ ] Формат Telegram-сообщения: единое длинное или несколько коротких?
-- [ ] Интеграция с GitHub Projects (v2)?
+- (все вопросы закрыты, см. context.md)

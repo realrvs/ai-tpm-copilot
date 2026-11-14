@@ -6,21 +6,26 @@
 - **Ключевые угрозы:** TM-06 (Critical, secrets leak), TM-01 (High, prompt injection), TM-02 (High, PII leak), TM-03 (High, hallucination), TM-09 (High, misinformation).
 
 ## Принятые ADR
-- ADR-001: Стратегия PII Redaction (Proposed) — связан с TM-02, NFR-SEC-001
-- ADR-002: Паттерн изоляции промпта (Proposed) — связан с TM-01, NFR-SEC-002
-- ADR-003: Схема валидации вывода LLM (Proposed) — связан с TM-03, TM-09, TM-04
-- ADR-004: Стратегия управления секретами (Proposed) — связан с TM-06, TM-08
+- **ADR-001:** Стратегия PII Redaction (Accepted) — presidio + кастомные regex для СНИЛС/ИНН
+- **ADR-002:** Паттерн изоляции промпта (Accepted) — XML-изоляция `<system-instructions>` / `<user-data>`
+- **ADR-003:** Схема валидации вывода LLM (Accepted) — JSON Schema + fact-check по Issue ID + fuzzy matching
+- **ADR-004:** Стратегия управления секретами (Accepted) — ENV → YC Secret Manager, gitleaks в CI
 
 ## Согласованные endpoints
 - `POST /api/v1/reports` — генерация отчета (auth required)
 - `GET /api/v1/reports/{report_id}` — получение отчета (auth required)
 - `GET /health` — health check (no auth)
 
-## Открытые вопросы
-- [ ] Какой LLM-провайдер выбрать по умолчанию: GigaChat или YandexGPT?
-- [ ] Нужна ли поддержка нескольких репозиториев в одном запуске?
-- [ ] Формат Telegram-сообщения: единое длинное или несколько коротких?
-- [ ] Нужна ли интеграция с GitHub Projects (v2)?
+> **Примечание:** API-эндпоинты запланированы для future phase (FastAPI-обёртка над CLI). На MVP — только CLI + Telegram.
+
+## Закрытые вопросы
+
+| Вопрос | Решение | ADR |
+|--------|---------|-----|
+| Какой LLM-провайдер выбрать по умолчанию? | **YandexGPT** (YC Generative LLM API, model: YandexGPT Lite) | — |
+| Нужна ли поддержка нескольких репозиториев? | **Да**, через `github.repos: list[str]` в конфиге | — |
+| Формат Telegram-сообщения | Разбиение на чанки ≤4000 символов по `\n\n` | — |
+| Интеграция с GitHub Projects v2 | **Нет**, вне scope MVP | — |
 
 ## Пропущенные артефакты
 - (нет)
