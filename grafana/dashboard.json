@@ -1,0 +1,77 @@
+{
+  "dashboard": {
+    "title": "AI TPM Copilot",
+    "tags": ["ai-tpm", "github", "llm"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "panels": [
+      {
+        "title": "Pipeline Duration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "pipeline_duration_ms",
+            "legendFormat": "{{stage}}"
+          }
+        ]
+      },
+      {
+        "title": "Issues Fetched",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "github_issue_count",
+            "legendFormat": "{{repo}}"
+          }
+        ]
+      },
+      {
+        "title": "PII Redacted Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "pii_redacted_count",
+            "legendFormat": "PII items"
+          }
+        ]
+      },
+      {
+        "title": "Report Status",
+        "type": "state-timeline",
+        "targets": [
+          {
+            "expr": "report_status",
+            "legendFormat": "{{report_id}}"
+          }
+        ]
+      },
+      {
+        "title": "LLM Token Usage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "llm_tokens_used",
+            "legendFormat": "Tokens"
+          }
+        ]
+      },
+      {
+        "title": "Pipeline Errors",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "pipeline_errors_total",
+            "legendFormat": "Errors"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "schemaVersion": 38,
+    "version": 1
+  },
+  "overwrite": true
+}
