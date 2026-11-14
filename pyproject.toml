@@ -1,0 +1,145 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-tpm-copilot"
+version = "0.1.0a0"
+description = "AI-powered TPM Copilot: automated status reporting from GitHub Issues/PRs with PII redaction and LLM analysis"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+authors = [
+    { name = "TPM Engineering", email = "tpm-eng@example.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Text Processing :: General",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    # CLI
+    "typer[all]>=0.12,<1.0",
+    # Config
+    "pydantic-settings>=2.2,<3",
+    "python-dotenv>=1.0,<2",
+    "pyyaml>=6.0,<7",
+    # HTTP / GitHub API
+    "httpx[http2]>=0.27,<1",
+    "PyGithub>=2.3,<3",
+    # Retry logic
+    "tenacity>=8.2,<9",
+    # PII Redaction
+    "presidio-analyzer>=2.2,<3",
+    "nltk>=3.8,<4",
+    # LLM Client — YandexGPT
+    "yandexcloud>=0.31,<1",
+    # Telegram
+    "aiogram>=3.4,<4",
+    # Observability
+    "opentelemetry-api>=1.24,<2",
+    "opentelemetry-sdk>=1.24,<2",
+    "opentelemetry-exporter-otlp>=1.24,<2",
+    # Token counting
+    "tiktoken>=0.7,<1",
+    # Database
+    "sqlalchemy>=2.0,<3",
+    "alembic>=1.13,<2",
+    "aiosqlite>=0.20,<1",
+    # Utilities
+    "python-dateutil>=2.8,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=8.0,<9",
+    "pytest-asyncio>=0.23,<1",
+    "respx>=0.21,<1",
+    "pytest-cov>=5.0,<6",
+    "pytest-mock>=3.14,<4",
+    # Linting / type-checking
+    "ruff>=0.4,<1",
+    "mypy>=1.10,<2",
+    "types-PyYAML",
+    "types-python-dateutil",
+    # Pre-commit
+    "pre-commit>=3.7,<4",
+    # Secrets scanning (CLI tool, installed via pipx or binary)
+    # gitleaks >=8.18  # available as CLI binary only
+]
+prod = [
+    # Production logging
+    "structlog>=24.1,<25",
+    # Health check
+    "uvicorn>=0.29,<1",
+]
+
+[project.scripts]
+ai-tpm = "ai_tpm_copilot.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/realrvs/ai-tpm-copilot"
+Repository = "https://github.com/realrvs/ai-tpm-copilot"
+Issues = "https://github.com/realrvs/ai-tpm-copilot/issues"
+
+# ─── Tool configs ───────────────────────────────────────────────
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_tpm_copilot"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+    "TCH",    # flake8-type-checking
+    "RUF",    # ruff rules
+]
+ignore = [
+    "E501",   # line length handled by formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["ai_tpm_copilot"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+# ─── Alembic lives in alembic/ ──────────────────────────────────
