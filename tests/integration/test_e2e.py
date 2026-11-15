@@ -247,5 +247,3 @@ def test_tc_e2e_004_cli_validate():
         or "error" in result.output.lower()
         or "valid" in result.output.lower()
     )
-
-
