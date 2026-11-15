@@ -11,11 +11,11 @@ import logging
 import signal
 import sys
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.triggers.cron import CronTrigger
-from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.schedulers.blocking import BlockingScheduler  # type: ignore[import-untyped]
+from apscheduler.triggers.cron import CronTrigger  # type: ignore[import-untyped]
+from apscheduler.triggers.interval import IntervalTrigger  # type: ignore[import-untyped]
 
 from ai_tpm_copilot.pipeline.observability import OTelInstrumentation
 from ai_tpm_copilot.pipeline.orchestrator import Pipeline
@@ -32,7 +32,7 @@ logger = logging.getLogger("ai_tpm_copilot.scheduler")
 _running = True
 
 
-def _signal_handler(signum: int, frame) -> None:
+def _signal_handler(signum: int, frame: Any) -> None:
     """Handle SIGINT/SIGTERM for graceful shutdown."""
     global _running
     logger.info("Received signal %d — shutting down gracefully...", signum)
@@ -44,7 +44,7 @@ def _run_pipeline(
     days: int = 7,
     deliver: str = "file",
     output_dir: Path | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Execute a single pipeline run and return metrics."""
     start = time.monotonic()
     try:

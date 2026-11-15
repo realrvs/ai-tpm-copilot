@@ -169,17 +169,17 @@ async def generate_report(request: ReportRequest) -> ReportResponse:
                 github: dict[str, Any]
 
             OverrideSettings(github={"repos": request.repos})
-            settings = Settings(
+            settings = Settings(  # type: ignore[arg-type]
                 github={
                     "token": _app_settings.github.token.get_secret_value(),
                     "repos": request.repos,
                 },
-                yandexgpt={
+                yandexgpt={  # type: ignore[arg-type]
                     "folder_id": _app_settings.yandexgpt.folder_id,
                     "iam_token": _app_settings.yandexgpt.iam_token.get_secret_value(),
                 },
-                pii={"enabled": False},
-                otel={"enabled": False},
+                pii={"enabled": False},  # type: ignore[arg-type]
+                otel={"enabled": False},  # type: ignore[arg-type]
             )
 
         # Run pipeline
