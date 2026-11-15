@@ -60,10 +60,8 @@ jobs:
         run: |
           python -m pytest tests/ -v --tb=short --cov=ai_tpm_copilot --cov-report=xml
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           YANDEXGPT_FOLDER_ID: test-folder
           YANDEXGPT_IAM_TOKEN: test-token
-          GITHUB_TOKEN: ghp_test_token
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
