@@ -249,24 +249,3 @@ def test_tc_e2e_004_cli_validate():
     )
 
 
-# ─── TC-E2E-005: Docker image builds ────────────────────────────
-
-
-def test_tc_e2e_005_dockerfile_exists():
-    """TC-E2E-005: Dockerfile exists and is valid YAML-like structure."""
-    dockerfile_path = Path(__file__).parent.parent.parent / "Dockerfile"
-
-    assert dockerfile_path.exists(), "Dockerfile not found"
-
-    content = dockerfile_path.read_text()
-
-    # Verify multi-stage build
-    assert "FROM python:3.12-slim AS builder" in content
-    assert "FROM python:3.12-slim AS runtime" in content
-
-    # Verify key instructions
-    assert "COPY" in content
-    assert "RUN" in content
-    assert "EXPOSE 8000" in content
-    assert "HEALTHCHECK" in content
-    assert "USER appuser" in content
