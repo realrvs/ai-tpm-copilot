@@ -35,6 +35,7 @@ def clear_reports():
 def client():
     """Create a test client."""
     from fastapi.testclient import TestClient
+
     return TestClient(app)
 
 
@@ -60,33 +61,37 @@ def test_tc_api_003_health_check(client):
 def test_tc_api_001_post_report(client):
     """TC-API-001: POST /api/v1/reports generates a report successfully."""
     # Mock GitHub API
-    issues = [{
-        "id": 1000,
-        "number": 10,
-        "title": "Test issue",
-        "body": "Test body",
-        "state": "closed",
-        "assignees": [],
-        "labels": [],
-        "created_at": datetime.now(UTC).isoformat(),
-        "updated_at": datetime.now(UTC).isoformat(),
-    }]
-    respx.get(
-        url__startswith="https://api.github.com/repos/test/test/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
-    respx.get(
-        url="https://api.github.com/repos/test/test/issues/10/comments"
-    ).mock(return_value=httpx.Response(200, json=[]))
+    issues = [
+        {
+            "id": 1000,
+            "number": 10,
+            "title": "Test issue",
+            "body": "Test body",
+            "state": "closed",
+            "assignees": [],
+            "labels": [],
+            "created_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
+        }
+    ]
+    respx.get(url__startswith="https://api.github.com/repos/test/test/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
+    respx.get(url="https://api.github.com/repos/test/test/issues/10/comments").mock(
+        return_value=httpx.Response(200, json=[])
+    )
 
     # Mock YandexGPT
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": """\
+            "candidates": [
+                {
+                    "text": """\
 ## Выполнено
 - #10 **Test issue** — _closed_
 """,
-            }],
+                }
+            ],
         },
     }
     respx.post("https://llm.api.cloud.yandex.net/generativeLlm/completions").mock(
@@ -112,6 +117,7 @@ def test_tc_api_001_post_report(client):
     with patch("ai_tpm_copilot.api.Settings.load", return_value=mock_settings):
         # Manually set the global settings to avoid 503
         import ai_tpm_copilot.api as api_module
+
         api_module._app_settings = mock_settings
 
         response = client.post(
@@ -136,29 +142,33 @@ def test_tc_api_001_post_report(client):
 def test_tc_api_002_get_report(client):
     """TC-API-002: GET /api/v1/reports/{id} retrieves the report."""
     # First generate a report
-    issues = [{
-        "id": 1000,
-        "number": 10,
-        "title": "Test issue",
-        "body": "Test body",
-        "state": "closed",
-        "assignees": [],
-        "labels": [],
-        "created_at": datetime.now(UTC).isoformat(),
-        "updated_at": datetime.now(UTC).isoformat(),
-    }]
-    respx.get(
-        url__startswith="https://api.github.com/repos/test/test/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
-    respx.get(
-        url="https://api.github.com/repos/test/test/issues/10/comments"
-    ).mock(return_value=httpx.Response(200, json=[]))
+    issues = [
+        {
+            "id": 1000,
+            "number": 10,
+            "title": "Test issue",
+            "body": "Test body",
+            "state": "closed",
+            "assignees": [],
+            "labels": [],
+            "created_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
+        }
+    ]
+    respx.get(url__startswith="https://api.github.com/repos/test/test/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
+    respx.get(url="https://api.github.com/repos/test/test/issues/10/comments").mock(
+        return_value=httpx.Response(200, json=[])
+    )
 
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": "## Выполнено\n- #10 **Test issue**",
-            }],
+            "candidates": [
+                {
+                    "text": "## Выполнено\n- #10 **Test issue**",
+                }
+            ],
         },
     }
     respx.post("https://llm.api.cloud.yandex.net/generativeLlm/completions").mock(
@@ -182,6 +192,7 @@ def test_tc_api_002_get_report(client):
 
     with patch("ai_tpm_copilot.api.Settings.load", return_value=mock_settings):
         import ai_tpm_copilot.api as api_module
+
         api_module._app_settings = mock_settings
 
         gen_response = client.post(
@@ -220,29 +231,33 @@ def test_tc_api_004_get_report_not_found(client):
 @respx.mock
 def test_tc_api_005_custom_days(client):
     """TC-API-005: POST /api/v1/reports with custom days parameter."""
-    issues = [{
-        "id": 1000,
-        "number": 20,
-        "title": "Custom days issue",
-        "body": "Test",
-        "state": "closed",
-        "assignees": [],
-        "labels": [],
-        "created_at": datetime.now(UTC).isoformat(),
-        "updated_at": datetime.now(UTC).isoformat(),
-    }]
-    respx.get(
-        url__startswith="https://api.github.com/repos/test/test/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
-    respx.get(
-        url="https://api.github.com/repos/test/test/issues/20/comments"
-    ).mock(return_value=httpx.Response(200, json=[]))
+    issues = [
+        {
+            "id": 1000,
+            "number": 20,
+            "title": "Custom days issue",
+            "body": "Test",
+            "state": "closed",
+            "assignees": [],
+            "labels": [],
+            "created_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
+        }
+    ]
+    respx.get(url__startswith="https://api.github.com/repos/test/test/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
+    respx.get(url="https://api.github.com/repos/test/test/issues/20/comments").mock(
+        return_value=httpx.Response(200, json=[])
+    )
 
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": "## Выполнено\n- #20 **Custom days issue**",
-            }],
+            "candidates": [
+                {
+                    "text": "## Выполнено\n- #20 **Custom days issue**",
+                }
+            ],
         },
     }
     respx.post("https://llm.api.cloud.yandex.net/generativeLlm/completions").mock(
@@ -266,6 +281,7 @@ def test_tc_api_005_custom_days(client):
 
     with patch("ai_tpm_copilot.api.Settings.load", return_value=mock_settings):
         import ai_tpm_copilot.api as api_module
+
         api_module._app_settings = mock_settings
 
         response = client.post(

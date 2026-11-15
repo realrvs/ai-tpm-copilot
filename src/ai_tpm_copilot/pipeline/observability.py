@@ -56,9 +56,7 @@ class OTelInstrumentation:
             logger.debug("OpenTelemetry disabled")
             return
 
-        resource = Resource.create(
-            {"service.name": self._settings.otel.service_name}
-        )
+        resource = Resource.create({"service.name": self._settings.otel.service_name})
         provider = TracerProvider(resource=resource)
 
         # Export to console (for development)
@@ -81,7 +79,9 @@ class OTelInstrumentation:
         return self._tracer
 
     @contextmanager
-    def span(self, name: str, attributes: dict[str, str | int] | None = None) -> Generator[trace.Span, None, None]:
+    def span(
+        self, name: str, attributes: dict[str, str | int] | None = None
+    ) -> Generator[trace.Span, None, None]:
         """Context manager that creates and yields a span.
 
         Usage:
@@ -92,6 +92,7 @@ class OTelInstrumentation:
         if tracer is None:
             # Fallback: no-op context manager
             from contextlib import nullcontext
+
             with nullcontext() as span:
                 yield span
             return
@@ -103,7 +104,9 @@ class OTelInstrumentation:
             yield span
 
     @contextmanager
-    def github_fetch_span(self, repo_count: int = 0, issue_count: int = 0) -> Generator[trace.Span, None, None]:
+    def github_fetch_span(
+        self, repo_count: int = 0, issue_count: int = 0
+    ) -> Generator[trace.Span, None, None]:
         """Span for GitHub fetch stage."""
         attrs = {
             "pipeline.stage": SPAN_GITHUB_FETCH,
@@ -144,7 +147,9 @@ class OTelInstrumentation:
             yield span
 
     @contextmanager
-    def report_validate_span(self, verified: int = 0, unverified: int = 0) -> Generator[trace.Span, None, None]:
+    def report_validate_span(
+        self, verified: int = 0, unverified: int = 0
+    ) -> Generator[trace.Span, None, None]:
         """Span for report validation stage."""
         attrs = {
             "pipeline.stage": SPAN_REPORT_VALIDATE,

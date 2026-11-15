@@ -34,9 +34,7 @@ logger = logging.getLogger("ai_tpm_copilot")
 
 @app.command()
 def run(
-    days: int = typer.Option(
-        7, "--days", "-d", help="Number of days of history to analyze"
-    ),
+    days: int = typer.Option(7, "--days", "-d", help="Number of days of history to analyze"),
     deliver: str = typer.Option(
         "file",
         "--deliver",
@@ -120,9 +118,7 @@ def schedule(
     cron: str = typer.Option(
         None, "--cron", "-cr", help="Cron expression (e.g. '0 9 * * 1' for Mon 9:00)"
     ),
-    days: int = typer.Option(
-        7, "--days", "-d", help="Number of days of history to analyze"
-    ),
+    days: int = typer.Option(7, "--days", "-d", help="Number of days of history to analyze"),
     deliver: str = typer.Option(
         "file",
         "--deliver",

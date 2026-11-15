@@ -33,6 +33,7 @@ def clear_reports():
 def client():
     """Create a test client."""
     from fastapi.testclient import TestClient
+
     return TestClient(app)
 
 
@@ -73,9 +74,9 @@ def test_tc_e2e_002_full_pipeline_via_api(client):
         for i in range(5)
     ]
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/smoke/test/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
+    respx.get(url__startswith="https://api.github.com/repos/smoke/test/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
 
     for issue in issues:
         respx.get(
@@ -85,8 +86,9 @@ def test_tc_e2e_002_full_pipeline_via_api(client):
     # Mock YandexGPT with realistic response
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": """\
+            "candidates": [
+                {
+                    "text": """\
 ## Выполнено
 - #10 **Test issue #10** — _closed, resolved_
 - #12 **Test issue #12** — _closed, resolved_
@@ -96,7 +98,8 @@ def test_tc_e2e_002_full_pipeline_via_api(client):
 - #11 **Test issue #11** — _in progress_
 - #13 **Test issue #13** — _in progress_
 """,
-            }],
+                }
+            ],
         },
     }
     respx.post("https://llm.api.cloud.yandex.net/generativeLlm/completions").mock(
@@ -105,6 +108,7 @@ def test_tc_e2e_002_full_pipeline_via_api(client):
 
     # Mock settings
     from unittest.mock import MagicMock
+
     mock_settings = MagicMock()
     mock_settings.github.token.get_secret_value.return_value = "ghp_test"
     mock_settings.github.repos = ["smoke/test"]
@@ -121,6 +125,7 @@ def test_tc_e2e_002_full_pipeline_via_api(client):
     mock_settings.enable_telegram_delivery = False
 
     import ai_tpm_copilot.api as api_module
+
     api_module._app_settings = mock_settings
 
     # Execute API call
@@ -150,29 +155,33 @@ def test_tc_e2e_002_full_pipeline_via_api(client):
 def test_tc_e2e_003_report_retrieval(client):
     """TC-E2E-003: Generate then retrieve report by ID."""
     # Generate report
-    issues = [{
-        "id": 2000,
-        "number": 50,
-        "title": "Smoke test issue",
-        "body": "Test",
-        "state": "closed",
-        "assignees": [],
-        "labels": [],
-        "created_at": "2026-11-14T00:00:00Z",
-        "updated_at": "2026-11-14T00:00:00Z",
-    }]
-    respx.get(
-        url__startswith="https://api.github.com/repos/smoke/test2/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
-    respx.get(
-        url="https://api.github.com/repos/smoke/test2/issues/50/comments"
-    ).mock(return_value=httpx.Response(200, json=[]))
+    issues = [
+        {
+            "id": 2000,
+            "number": 50,
+            "title": "Smoke test issue",
+            "body": "Test",
+            "state": "closed",
+            "assignees": [],
+            "labels": [],
+            "created_at": "2026-11-14T00:00:00Z",
+            "updated_at": "2026-11-14T00:00:00Z",
+        }
+    ]
+    respx.get(url__startswith="https://api.github.com/repos/smoke/test2/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
+    respx.get(url="https://api.github.com/repos/smoke/test2/issues/50/comments").mock(
+        return_value=httpx.Response(200, json=[])
+    )
 
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": "## Выполнено\n- #50 **Smoke test issue**",
-            }],
+            "candidates": [
+                {
+                    "text": "## Выполнено\n- #50 **Smoke test issue**",
+                }
+            ],
         },
     }
     respx.post("https://llm.api.cloud.yandex.net/generativeLlm/completions").mock(
@@ -180,6 +189,7 @@ def test_tc_e2e_003_report_retrieval(client):
     )
 
     from unittest.mock import MagicMock
+
     mock_settings = MagicMock()
     mock_settings.github.token.get_secret_value.return_value = "ghp_test"
     mock_settings.github.repos = ["smoke/test2"]
@@ -196,6 +206,7 @@ def test_tc_e2e_003_report_retrieval(client):
     mock_settings.enable_telegram_delivery = False
 
     import ai_tpm_copilot.api as api_module
+
     api_module._app_settings = mock_settings
 
     gen_response = client.post(
@@ -231,7 +242,11 @@ def test_tc_e2e_004_cli_validate():
 
     # Should exit with non-zero (missing ENV) but not crash
     assert result.exit_code in (0, 1)
-    assert "Configuration" in result.output or "error" in result.output.lower() or "valid" in result.output.lower()
+    assert (
+        "Configuration" in result.output
+        or "error" in result.output.lower()
+        or "valid" in result.output.lower()
+    )
 
 
 # ─── TC-E2E-005: Docker image builds ────────────────────────────

@@ -170,8 +170,14 @@ async def generate_report(request: ReportRequest) -> ReportResponse:
 
             OverrideSettings(github={"repos": request.repos})
             settings = Settings(
-                github={"token": _app_settings.github.token.get_secret_value(), "repos": request.repos},
-                yandexgpt={"folder_id": _app_settings.yandexgpt.folder_id, "iam_token": _app_settings.yandexgpt.iam_token.get_secret_value()},
+                github={
+                    "token": _app_settings.github.token.get_secret_value(),
+                    "repos": request.repos,
+                },
+                yandexgpt={
+                    "folder_id": _app_settings.yandexgpt.folder_id,
+                    "iam_token": _app_settings.yandexgpt.iam_token.get_secret_value(),
+                },
                 pii={"enabled": False},
                 otel={"enabled": False},
             )
@@ -187,18 +193,22 @@ async def generate_report(request: ReportRequest) -> ReportResponse:
         # Count issues (approximate from markdown)
         issues_count = markdown.count("#") - markdown.count("##")
 
-        _reports[report_id].update({
-            "status": "completed",
-            "markdown": markdown,
-            "issues_count": issues_count,
-        })
+        _reports[report_id].update(
+            {
+                "status": "completed",
+                "markdown": markdown,
+                "issues_count": issues_count,
+            }
+        )
 
     except Exception as exc:
         logger.error("Report generation failed: %s", exc, exc_info=True)
-        _reports[report_id].update({
-            "status": "failed",
-            "error": str(exc),
-        })
+        _reports[report_id].update(
+            {
+                "status": "failed",
+                "error": str(exc),
+            }
+        )
         raise HTTPException(status_code=500, detail=str(exc))
 
     duration_ms = (time.monotonic() - start) * 1000

@@ -58,6 +58,7 @@ def _run_pipeline(
 
         if deliver in ("telegram", "both") and settings.enable_telegram_delivery:
             import asyncio
+
             tg = TelegramSender(settings)
             success = asyncio.run(tg.send(markdown))
             if not success:

@@ -42,33 +42,37 @@ def test_tc_sched_001_success_metrics():
     settings = _make_settings()
 
     # Mock GitHub API
-    issues = [{
-        "id": 1000,
-        "number": 10,
-        "title": "Test issue",
-        "body": "Test body",
-        "state": "closed",
-        "assignees": [],
-        "labels": [],
-        "created_at": "2026-11-14T00:00:00Z",
-        "updated_at": "2026-11-14T00:00:00Z",
-    }]
-    respx.get(
-        url__startswith="https://api.github.com/repos/t/t/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
-    respx.get(
-        url="https://api.github.com/repos/t/t/issues/10/comments"
-    ).mock(return_value=httpx.Response(200, json=[]))
+    issues = [
+        {
+            "id": 1000,
+            "number": 10,
+            "title": "Test issue",
+            "body": "Test body",
+            "state": "closed",
+            "assignees": [],
+            "labels": [],
+            "created_at": "2026-11-14T00:00:00Z",
+            "updated_at": "2026-11-14T00:00:00Z",
+        }
+    ]
+    respx.get(url__startswith="https://api.github.com/repos/t/t/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
+    respx.get(url="https://api.github.com/repos/t/t/issues/10/comments").mock(
+        return_value=httpx.Response(200, json=[])
+    )
 
     # Mock YandexGPT
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": """\
+            "candidates": [
+                {
+                    "text": """\
 ## Выполнено
 - #10 **Test issue** — _closed_
 """,
-            }],
+                }
+            ],
         },
     }
     respx.post("https://llm.api.cloud.yandex.net/generativeLlm/completions").mock(
@@ -100,9 +104,9 @@ def test_tc_sched_002_error_metrics():
 
     # Mock GitHub API to return 401
     with respx.mock:
-        respx.get(
-            url__startswith="https://api.github.com/repos/t/t/issues"
-        ).mock(return_value=httpx.Response(401, json={"message": "Unauthorized"}))
+        respx.get(url__startswith="https://api.github.com/repos/t/t/issues").mock(
+            return_value=httpx.Response(401, json={"message": "Unauthorized"})
+        )
 
         result = _run_pipeline(settings_with_bad_token, days=7, deliver="file")
 

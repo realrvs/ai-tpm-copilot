@@ -68,17 +68,19 @@ def _mock_issues(count: int, states: list[str] | None = None) -> list[dict[str, 
     issues = []
     for i in range(count):
         created = datetime.now(UTC) - timedelta(days=i % 5 + 1)
-        issues.append({
-            "id": 1000 + i,
-            "number": 10 + i,
-            "title": f"Test issue #{10 + i}",
-            "body": f"Description for issue {10 + i}",
-            "state": states[i],
-            "assignees": [{"login": "user1"}],
-            "labels": [{"name": "bug"}],
-            "created_at": created.isoformat(),
-            "updated_at": (created + timedelta(hours=1)).isoformat(),
-        })
+        issues.append(
+            {
+                "id": 1000 + i,
+                "number": 10 + i,
+                "title": f"Test issue #{10 + i}",
+                "body": f"Description for issue {10 + i}",
+                "state": states[i],
+                "assignees": [{"login": "user1"}],
+                "labels": [{"name": "bug"}],
+                "created_at": created.isoformat(),
+                "updated_at": (created + timedelta(hours=1)).isoformat(),
+            }
+        )
     return issues
 
 
@@ -92,9 +94,9 @@ def test_tc003_report_generation_10_issues():
 
     # Mock GitHub API
     issues = _mock_issues(10)
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
 
     for issue in issues:
         respx.get(
@@ -104,8 +106,9 @@ def test_tc003_report_generation_10_issues():
     # Mock YandexGPT API — return a structured response
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": """\
+            "candidates": [
+                {
+                    "text": """\
 ## Выполнено
 - #10 **Test issue #10** — _closed, resolved_
 - #12 **Test issue #12** — _closed, resolved_
@@ -123,7 +126,8 @@ def test_tc003_report_generation_10_issues():
 ## Риски
 - #17 **Test issue #17** — _open >5 days without changes_
 """,
-            }],
+                }
+            ],
         },
     }
 
@@ -154,34 +158,38 @@ def test_tc004_blocked_issue_detection():
     settings = _make_settings()
 
     # Single issue with blocked-by content
-    issues = [{
-        "id": 2000,
-        "number": 42,
-        "title": "Depends on external API",
-        "body": "This is blocked by #123 — waiting for their endpoint",
-        "state": "open",
-        "assignees": [{"login": "dev1"}],
-        "labels": [{"name": "blocked"}],
-        "created_at": datetime.now(UTC).isoformat(),
-        "updated_at": datetime.now(UTC).isoformat(),
-    }]
+    issues = [
+        {
+            "id": 2000,
+            "number": 42,
+            "title": "Depends on external API",
+            "body": "This is blocked by #123 — waiting for their endpoint",
+            "state": "open",
+            "assignees": [{"login": "dev1"}],
+            "labels": [{"name": "blocked"}],
+            "created_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
+        }
+    ]
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(return_value=httpx.Response(200, json=issues))
-    respx.get(
-        url="https://api.github.com/repos/test-owner/test-repo/issues/42/comments"
-    ).mock(return_value=httpx.Response(200, json=[]))
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
+        return_value=httpx.Response(200, json=issues)
+    )
+    respx.get(url="https://api.github.com/repos/test-owner/test-repo/issues/42/comments").mock(
+        return_value=httpx.Response(200, json=[])
+    )
 
     # LLM response with the issue in blocked section
     llm_response = {
         "completion": {
-            "candidates": [{
-                "text": """\
+            "candidates": [
+                {
+                    "text": """\
 ## Заблокировано
 - #42 **Depends on external API** — _blocked by #123_
 """,
-            }],
+                }
+            ],
         },
     }
 
@@ -201,8 +209,10 @@ def test_tc004_blocked_issue_detection():
 
 def _async_coro(value: Any):
     """Create an async coroutine that returns a value."""
+
     async def _coro():
         return value
+
     return _coro()
 
 
@@ -228,13 +238,12 @@ def test_tc005_telegram_delivery_mock(mock_Bot):
     long_report += "\n\n" + "Extra section\n" * 200  # push over 4000
 
     mock_bot_instance = MagicMock()
-    mock_bot_instance.send_message = MagicMock(
-        side_effect=lambda *a, **k: _async_coro(MagicMock())
-    )
+    mock_bot_instance.send_message = MagicMock(side_effect=lambda *a, **k: _async_coro(MagicMock()))
     mock_bot_instance.close = MagicMock(return_value=_async_coro(None))
     mock_Bot.return_value = mock_bot_instance
 
     import asyncio
+
     success = asyncio.run(sender.send(long_report))
 
     assert success is True
@@ -263,6 +272,7 @@ def test_tc005_small_report_single_chunk(mock_Bot):
     mock_Bot.return_value = mock_bot_instance
 
     import asyncio
+
     asyncio.run(sender.send(small_report))
 
     assert mock_bot_instance.send_message.call_count == 1

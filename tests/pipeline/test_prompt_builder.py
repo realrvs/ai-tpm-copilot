@@ -41,7 +41,9 @@ def _make_issue(number: int, title: str, body: str = "", state: str = "open") ->
     )
 
 
-def _make_redaction(sanitized: str, redacted_count: int = 0, pii_types: list[str] | None = None) -> RedactionResult:
+def _make_redaction(
+    sanitized: str, redacted_count: int = 0, pii_types: list[str] | None = None
+) -> RedactionResult:
     """Create a RedactionResult."""
     return RedactionResult(
         original=sanitized,
@@ -82,7 +84,12 @@ def test_tc_prompt_002_sanitized_content():
     sanitized_text = "Contact: [EMAIL_REDACTED], SNILS: [SNILS_REDACTED]"
 
     issue = _make_issue(5, "Bug report", original_text)
-    result = RedactionResult(original=original_text, sanitized=sanitized_text, redacted_count=2, pii_types=["EMAIL", "SNILS"])
+    result = RedactionResult(
+        original=original_text,
+        sanitized=sanitized_text,
+        redacted_count=2,
+        pii_types=["EMAIL", "SNILS"],
+    )
 
     prompt = builder.build([issue], [result])
 

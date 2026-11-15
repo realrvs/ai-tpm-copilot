@@ -102,7 +102,9 @@ class YandexGPTClient:
         except (AttributeError, KeyError):
             pass
 
-        logger.warning("Could not extract text from YandexGPT response: %s", json.dumps(response)[:200])
+        logger.warning(
+            "Could not extract text from YandexGPT response: %s", json.dumps(response)[:200]
+        )
         return ""
 
     def parse_report(self, raw_text: str) -> LLMReport:

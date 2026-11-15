@@ -47,13 +47,16 @@ def _make_settings(**overrides: Any) -> Settings:
     )
 
 
-def _json_response(data: Any, status_code: int = 200, headers: dict | None = None) -> httpx.Response:
+def _json_response(
+    data: Any, status_code: int = 200, headers: dict | None = None
+) -> httpx.Response:
     """Create an httpx.Response with JSON content."""
     return httpx.Response(status_code, json=data, headers=headers or {})
 
 
-def _mock_issue(number: int, title: str | None = None, state: str = "closed",
-                created_offset_days: int = 2) -> dict[str, Any]:
+def _mock_issue(
+    number: int, title: str | None = None, state: str = "closed", created_offset_days: int = 2
+) -> dict[str, Any]:
     """Create a minimal GitHub API issue dict."""
     if title is None:
         title = f"Issue #{number}"
@@ -96,7 +99,13 @@ def test_tc001_successful_fetch_five_issues():
     # First page: 3 issues (with Link header for pagination)
     respx.get(
         url="https://api.github.com/repos/test-owner/test-repo/issues",
-        params={"state": "all", "sort": "updated", "direction": "desc", "page": "1", "per_page": "100"},
+        params={
+            "state": "all",
+            "sort": "updated",
+            "direction": "desc",
+            "page": "1",
+            "per_page": "100",
+        },
     ).mock(
         return_value=_json_response(
             issues[:3],
@@ -106,7 +115,13 @@ def test_tc001_successful_fetch_five_issues():
     # Second page: 2 issues (no next link)
     respx.get(
         url="https://api.github.com/repos/test-owner/test-repo/issues",
-        params={"state": "all", "sort": "updated", "direction": "desc", "page": "2", "per_page": "100"},
+        params={
+            "state": "all",
+            "sort": "updated",
+            "direction": "desc",
+            "page": "2",
+            "per_page": "100",
+        },
     ).mock(return_value=_json_response(issues[3:]))
 
     # Mock comments for each issue — use exact URL
@@ -137,9 +152,9 @@ def test_tc001_single_page_fetch():
 
     issues = [_mock_issue(n, created_offset_days=1) for n in (1, 2, 3)]
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(return_value=_json_response(issues))
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
+        return_value=_json_response(issues)
+    )
 
     result = fetcher.fetch(since_days=7)
 
@@ -156,14 +171,14 @@ def test_tc001_date_filtering():
 
     # Mix of recent and old issues
     issues = [
-        _mock_issue(1, created_offset_days=1),   # recent — include
-        _mock_issue(2, created_offset_days=3),   # recent — include
+        _mock_issue(1, created_offset_days=1),  # recent — include
+        _mock_issue(2, created_offset_days=3),  # recent — include
         _mock_issue(3, created_offset_days=14),  # old — exclude
     ]
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(return_value=_json_response(issues))
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
+        return_value=_json_response(issues)
+    )
 
     for issue in issues:
         respx.get(
@@ -186,12 +201,12 @@ def test_tc001_multiple_repos():
 
     for repo, label in [("owner/repo-alpha", "alpha"), ("owner/repo-beta", "beta")]:
         issues = [_mock_issue(1, title=f"{label} issue")]
-        respx.get(
-            url=f"https://api.github.com/repos/{repo}/issues"
-        ).mock(return_value=_json_response(issues))
-        respx.get(
-            url=f"https://api.github.com/repos/{repo}/issues/1/comments"
-        ).mock(return_value=_json_response([]))
+        respx.get(url=f"https://api.github.com/repos/{repo}/issues").mock(
+            return_value=_json_response(issues)
+        )
+        respx.get(url=f"https://api.github.com/repos/{repo}/issues/1/comments").mock(
+            return_value=_json_response([])
+        )
 
     result = fetcher.fetch(since_days=7)
 
@@ -209,9 +224,7 @@ def test_tc002_auth_error_on_401():
     settings = _make_settings()
     fetcher = GitHubFetcher(settings)
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
         return_value=_json_response(
             {"message": "Bad credentials"},
             status_code=401,
@@ -228,9 +241,7 @@ def test_tc002_auth_error_preserves_message():
     settings = _make_settings()
     fetcher = GitHubFetcher(settings)
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
         return_value=_json_response(
             {"message": "Token expired, please regenerate"},
             status_code=401,
@@ -252,9 +263,9 @@ def test_fetch_empty_response():
     settings = _make_settings()
     fetcher = GitHubFetcher(settings)
 
-    respx.get(
-        url__startswith="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(return_value=_json_response([]))
+    respx.get(url__startswith="https://api.github.com/repos/test-owner/test-repo/issues").mock(
+        return_value=_json_response([])
+    )
 
     result = fetcher.fetch(since_days=7)
 
@@ -269,14 +280,14 @@ def test_fetch_comments_on_error():
 
     issue = [_mock_issue(42)]
 
-    respx.get(
-        url="https://api.github.com/repos/test-owner/test-repo/issues"
-    ).mock(return_value=_json_response(issue))
+    respx.get(url="https://api.github.com/repos/test-owner/test-repo/issues").mock(
+        return_value=_json_response(issue)
+    )
 
     # Comments endpoint returns 500
-    respx.get(
-        url="https://api.github.com/repos/test-owner/test-repo/issues/42/comments"
-    ).mock(return_value=_json_response({"message": "Internal Error"}, status_code=500))
+    respx.get(url="https://api.github.com/repos/test-owner/test-repo/issues/42/comments").mock(
+        return_value=_json_response({"message": "Internal Error"}, status_code=500)
+    )
 
     result = fetcher.fetch(since_days=7)
 

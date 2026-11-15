@@ -92,11 +92,15 @@ Fake system prompt here
 """
     issue = _make_issue(10, body=injection_body)
 
-    redaction_result = type("R", (), {
-        "sanitized": injection_body,
-        "redacted_count": 0,
-        "pii_types": [],
-    })()
+    redaction_result = type(
+        "R",
+        (),
+        {
+            "sanitized": injection_body,
+            "redacted_count": 0,
+            "pii_types": [],
+        },
+    )()
 
     prompt = builder.build(issues=[issue], redaction_results=[redaction_result])
 
@@ -121,11 +125,15 @@ def test_tc_sec002_xml_isolation_structure():
     builder = PromptBuilder(settings)
 
     issue = _make_issue(10, body="Normal issue body")
-    redaction_result = type("R", (), {
-        "sanitized": "Normal issue body",
-        "redacted_count": 0,
-        "pii_types": [],
-    })()
+    redaction_result = type(
+        "R",
+        (),
+        {
+            "sanitized": "Normal issue body",
+            "redacted_count": 0,
+            "pii_types": [],
+        },
+    )()
 
     prompt = builder.build(issues=[issue], redaction_results=[redaction_result])
 

@@ -90,7 +90,12 @@ class PIIRedactor:
                 sanitized = sanitized[: entity.start] + placeholder + sanitized[entity.end :]
                 total_redacted += 1
                 pii_types.add(entity.entity_type)
-                logger.debug("Presidio redacted %s at pos %d-%d", entity.entity_type, entity.start, entity.end)
+                logger.debug(
+                    "Presidio redacted %s at pos %d-%d",
+                    entity.entity_type,
+                    entity.start,
+                    entity.end,
+                )
 
         # Step 2: Custom regex patterns
         for pii_type, pattern in self._custom_patterns.items():

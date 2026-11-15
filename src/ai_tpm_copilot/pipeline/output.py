@@ -43,9 +43,7 @@ class TelegramSender:
     def __init__(self, settings: Settings):
         self._bot_token = settings.telegram_bot_token
         self._chat_id = settings.telegram.chat_id if settings.telegram else None
-        self._parse_mode = (
-            settings.telegram.parse_mode if settings.telegram else "Markdown"
-        )
+        self._parse_mode = settings.telegram.parse_mode if settings.telegram else "Markdown"
 
     async def send(self, report: str) -> bool:
         """Send report to Telegram.

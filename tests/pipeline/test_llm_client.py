@@ -63,7 +63,10 @@ def test_tc_llm_001_parse_all_sections():
 
     assert len(report.blocked) == 1
     assert report.blocked[0].issue_id == 15
-    assert "blocked" in report.blocked[0].reason.lower() or "waiting" in report.blocked[0].reason.lower()
+    assert (
+        "blocked" in report.blocked[0].reason.lower()
+        or "waiting" in report.blocked[0].reason.lower()
+    )
 
     assert len(report.risks) == 1
     assert report.risks[0].issue_id == 17
