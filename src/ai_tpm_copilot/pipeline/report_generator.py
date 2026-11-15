@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 if TYPE_CHECKING:
     from ai_tpm_copilot.models.domain import LLMReport
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class ReportGenerator:
     """Generates Markdown reports from validated LLMReport data."""
 
-    SECTION_TITLES = {
+    SECTION_TITLES: ClassVar[dict[str, str]] = {
         "completed": "## Выполнено",
         "in_progress": "## В работе",
         "blocked": "## Заблокировано",

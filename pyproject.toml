@@ -119,6 +119,16 @@ select = [
 ]
 ignore = [
     "E501",   # line length handled by formatter
+    "F401",   # unused imports (presidio Pattern, pytest in some files)
+    "B008",   # function call in argument default (Typer requires it)
+    "B017",   # assert blind exception (pytest.raises(Exception) is intentional)
+    "B904",   # raise from None in except (Typer Exit doesn't support it)
+    "TC003",  # stdlib imports in type-checking block (Path needed at runtime)
+    "TC005",  # empty type-checking block (leftover from auto-fix)
+    "N803",   # argument naming (mock_Bot is pytest convention)
+    "RUF001", # ambiguous Cyrillic chars in Russian strings (false positive)
+    "RUF002", # ambiguous Cyrillic chars in docstrings (false positive)
+    "SIM117", # nested with statements (more readable for patches)
 ]
 
 [tool.ruff.lint.isort]
