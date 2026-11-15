@@ -198,28 +198,6 @@ pytest tests/pipeline/test_github_fetcher.py -v
 | Integration | 7 | ✅ |
 | **Total** | **93** | **✅** |
 
-## 🐳 Docker
-
-### Build Image
-
-```bash
-docker build -t ai-tpm-copilot:latest .
-```
-
-### Run Container
-
-```bash
-docker run --env-file .env \
-  -p 8000:8000 \
-  ai-tpm-copilot:latest
-```
-
-### Health Check
-
-```bash
-curl http://localhost:8000/health
-```
-
 ## 🔒 Security
 
 ### Threat Model
@@ -285,7 +263,6 @@ ai-tpm-copilot/
 │   └── dashboard.json
 ├── adr/                    # Architecture Decision Records
 ├── alembic/                # Database migrations
-├── Dockerfile
 ├── pyproject.toml
 └── .github/workflows/
     └── ci-cd.yml
@@ -301,5 +278,5 @@ Apache-2.0 — See [LICENSE](LICENSE) for details.
 |------|-----------------|
 | Tech Lead / Security | Architecture, ADR, security, code review |
 | Senior Backend | Python, httpx, YandexGPT, presidio, aiogram |
-| DevOps | CI/CD, Docker, Alembic, OTel, Grafana |
+| DevOps | CI/CD, Alembic, OTel, Grafana |
 | QA Automation | pytest, respx, security tests, performance |
