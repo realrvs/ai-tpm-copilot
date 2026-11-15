@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.12"
@@ -114,12 +115,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ─── Deploy (manual trigger) ─────────────────────────────────
+  # ─── Deploy (manual trigger only) ────────────────────────────
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [docker]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     environment: production
     steps:
       - name: Deploy via SSH
